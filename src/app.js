@@ -69,11 +69,12 @@
     while (report.firstChild) report.removeChild(report.firstChild);
   }
 
-  function renderReport(html) {
+  function renderReport(html, note) {
     clearReport();
+    var prefix = note ? note + ' ' : '';
 
     if (!html.trim()) {
-      status.textContent = 'Paste HTML, or load the example, to begin.';
+      status.textContent = prefix + 'Paste HTML, or load the example, to begin.';
       report.appendChild(el('p', 'report__empty', ['Nothing to audit yet.']));
       return;
     }
@@ -82,15 +83,15 @@
     try {
       result = auditHtml(html);
     } catch (err) {
-      status.textContent = 'Could not analyze this input.';
+      status.textContent = prefix + 'Could not analyze this input.';
       report.appendChild(el('p', 'report__empty', [String(err && err.message || err)]));
       return;
     }
 
     var issueCount = result.issues.length;
-    status.textContent = issueCount
+    status.textContent = prefix + (issueCount
       ? issueCount + ' issue' + (issueCount === 1 ? '' : 's') + ' found'
-      : 'No issues found';
+      : 'No issues found');
 
     report.appendChild(el(
       'p',
@@ -110,12 +111,13 @@
     if (debounceTimer) clearTimeout(debounceTimer);
     debounceTimer = setTimeout(function () {
       var html = input.value;
+      var note = null;
       if (html.length > MAX_CHARS) {
         html = html.slice(0, MAX_CHARS);
         input.value = html;
-        status.textContent = 'Input truncated to ' + MAX_CHARS + ' characters.';
+        note = 'Input truncated to ' + MAX_CHARS + ' characters.';
       }
-      renderReport(html);
+      renderReport(html, note);
     }, DEBOUNCE_MS);
   }
 

@@ -90,7 +90,7 @@ exact same code backs the CLI, the library and the UI. Paste or drop an
 
 ## How it was tested
 
-`npm test` (= `node --test`) runs 107 cases across five files:
+`npm test` (= `node --test`) runs 119 cases across six files:
 
 - `tests/htmlParse.test.js` (15) — the tolerant HTML tokenizer: attributes
   (quoted/unquoted/boolean), void elements, self-closing syntax, comments,
@@ -112,6 +112,16 @@ exact same code backs the CLI, the library and the UI. Paste or drop an
 - `tests/cli.test.js` (11) — the CLI as a real subprocess: exit codes,
   `--json`, a missing file, no arguments, `--help`, a directory given
   instead of a file, and that piping into `head` doesn't crash with EPIPE.
+- `tests/ui.test.js` (12) — drives `src/app.js` through a hand-rolled DOM
+  stub (`tests/dom-stub.js`, no jsdom, no network, no port): typing into the
+  textarea and seeing the debounced report render, the Load example and
+  Clear buttons, drag-and-drop file loading (including a failed read and a
+  drop with no file), the 2,000,000-character truncation message, and a
+  direct source check that nothing is ever built via `innerHTML`. Found a
+  real bug: the truncation notice was set and then immediately overwritten
+  by `renderReport`'s own status line in the same tick, so a user who hit the
+  character cap never actually saw it — fixed by threading the note through
+  `renderReport` instead of racing it.
 - `tests/hostile.test.js` (28) — the full adversarial battery (empty/huge
   input, type confusion, unicode/homoglyphs/null bytes, script/SQL/template/
   path-traversal injection shapes as inert data) plus explicit performance
@@ -130,20 +140,26 @@ exact same code backs the CLI, the library and the UI. Paste or drop an
     small constants; the same adversarial input now finishes in well under
     a second.
 
-All 107 tests run in about 1 second total, with no network access, no
+All 119 tests run in about 2 seconds total, with no network access, no
 external binary, and no manual setup.
 
 ## Known gaps
 
-- **No live-browser verification of the UI this weekend.** `python3 -m
-  http.server` fails with a sandbox `PermissionError` on binding a port in
-  the build environment used for this project (confirmed, not assumed —
-  same wall hit by two other projects built the same weekend). Verified
-  instead: `node --check` on every JS file, every `getElementById` id in
-  `src/app.js` cross-checked against `index.html` (5/5 match), every CSS
-  class referenced in `app.js` cross-checked against `styles.css`, and
-  contrast ratios for every text/background colour pair computed
-  programmatically (all ≥ 4.59:1 in both light and dark).
+- **No live-browser verification of the UI's rendering/CSS, or real
+  `File`/`DataTransfer` conformance.** `python3 -m http.server` fails with a
+  sandbox `PermissionError` on binding a port in the build environment used
+  for this project (confirmed, not assumed — same wall hit by two other
+  projects built the same weekend). `tests/ui.test.js` now closes the
+  *behavioral* half of this gap — every event handler in `src/app.js`
+  actually fires and does the right thing, proven by driving it through a
+  hand-rolled DOM stub rather than reading the code — but a stub is not a
+  real layout engine: actual CSS rendering, real drag-and-drop file
+  conformance, and real event capture/bubbling are still unverified. Also
+  verified statically: `node --check` on every JS file, every
+  `getElementById` id in `src/app.js` cross-checked against `index.html`
+  (5/5 match), every CSS class referenced in `app.js` cross-checked against
+  `styles.css`, and contrast ratios for every text/background colour pair
+  computed programmatically (all ≥ 4.59:1 in both light and dark).
 - **Check 4 (Tab-trap) is a heuristic, not a guarantee.** It can miss a trap
   built from an external script file loaded over a path this tool wasn't
   given, or one assembled dynamically at runtime (e.g. `addEventListener`
