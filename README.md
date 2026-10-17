@@ -90,7 +90,7 @@ exact same code backs the CLI, the library and the UI. Paste or drop an
 
 ## How it was tested
 
-`npm test` (= `node --test`) runs 103 cases across five files:
+`npm test` (= `node --test`) runs 106 cases across five files:
 
 - `tests/htmlParse.test.js` (15) — the tolerant HTML tokenizer: attributes
   (quoted/unquoted/boolean), void elements, self-closing syntax, comments,
@@ -101,7 +101,7 @@ exact same code backs the CLI, the library and the UI. Paste or drop an
   a real bug this test found before it was fixed), `@media`/`@supports`
   recursion with line numbers preserved, `@keyframes`/`@font-face`/`@import`
   correctly skipped rather than misread as selectors, and malformed input.
-- `tests/auditor.test.js` (30) — all four checks against both the
+- `tests/auditor.test.js` (33) — all four checks against both the
   flag-this and don't-flag-this side of every rule: disabled/inert/
   `aria-hidden` elements, malformed tabindex values, the `:focus-visible`
   escape hatch, `@media`-nested focus rules, external (`src=`) scripts
@@ -130,7 +130,7 @@ exact same code backs the CLI, the library and the UI. Paste or drop an
     small constants; the same adversarial input now finishes in well under
     a second.
 
-All 103 tests run in about 1 second total, with no network access, no
+All 106 tests run in about 1 second total, with no network access, no
 external binary, and no manual setup.
 
 ## Known gaps

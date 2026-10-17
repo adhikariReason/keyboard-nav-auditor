@@ -71,6 +71,18 @@ test('tabindex=0 elements keep DOM order and are not flagged as diverging', () =
   assert.deepEqual(issues.filter((i) => i.rule === 'tab-order-diverges'), []);
 });
 
+test('an element with an id gets an id-based selector (tag#id) in reported output', () => {
+  const issues = auditHtml('<button id="submit-btn" tabindex="1">Go</button>').issues;
+  assert.equal(issues[0].selector, 'button#submit-btn');
+});
+
+test('a later positive-tabindex element sorts before earlier zero/no-tabindex elements', () => {
+  const { tabOrder } = auditHtml(
+    '<button id="a">A</button><button id="b">B</button><button id="c" tabindex="5">C</button>'
+  );
+  assert.deepEqual(tabOrder.map((t) => t.selector), ['button#c', 'button#a', 'button#b']);
+});
+
 test('a malformed (non-numeric) tabindex is treated as absent, not as an error', () => {
   const { tabOrder } = auditHtml('<div role="button" tabindex="banana">x</div>');
   assert.deepEqual(tabOrder, []);
@@ -115,6 +127,11 @@ test('a "compensating" box-shadow that is itself transparent does not count as r
 
 test('outline set to currentColor is not flagged — it tracks the text colour, not invisible', () => {
   const issues = auditHtml('<style>.btn:focus{outline:2px solid currentColor}</style><button class="btn">x</button>').issues;
+  assert.deepEqual(issues, []);
+});
+
+test('an empty <style></style> block contributes no rules and does not crash', () => {
+  const issues = auditHtml('<style></style><button class="btn">x</button>').issues;
   assert.deepEqual(issues, []);
 });
 
