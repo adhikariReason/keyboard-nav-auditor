@@ -43,7 +43,7 @@ executed, nothing is rendered, and nothing leaves your machine.
 | Excluded | Why |
 | --- | --- |
 | Executing script, rendering layout, or confirming a flagged defect is actually experienced by a real user tabbing through the page | No browser automation here — this tool reports where the markup/CSS/script *looks* wrong, not a recording of real keystrokes. See "Known gaps" below. |
-| Fetching an external `<link>`/`<script src>` when the input is a raw HTML string rather than a file path | No network fetch at runtime, ever — keyless by design. When the input *is* a file path, same-directory external scripts are read from disk; anything else is reported as "not analyzed", never silently skipped without saying so. |
+| Fetching or reading an external `<link>`/`<script src>` | No network fetch at runtime, ever — keyless by design. External scripts are unconditionally skipped for Check 4 (tab-trap detection looks only at inline `<script>` bodies), whether the input is a file path or a raw HTML string. |
 | Shadow DOM, `<iframe>` contents, `<canvas>`-drawn UI, ARIA roles beyond the interactive set above, colour contrast, screen-reader label quality | A full WCAG audit is a different, much larger problem. This stays keyboard-navigation-only, as named. |
 | Check 4 confirming an actual trap, rather than a suspicious pattern | Heuristic over source text, not an AST or execution trace. False positives are possible on unusual but harmless code; the report says so in the message itself. |
 
