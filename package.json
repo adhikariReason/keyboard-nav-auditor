@@ -1,0 +1,14 @@
+{
+  "name": "keyboard-nav-auditor",
+  "version": "1.0.0",
+  "description": "Static analyzer: keyboard-unreachable controls, tab-order divergence, suppressed focus indicators, and a Tab-trap script heuristic.",
+  "main": "src/auditor.js",
+  "bin": {
+    "kbnav": "bin/kbnav.js"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}

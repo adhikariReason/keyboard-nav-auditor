@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Keyboard-nav auditor</title>
+<meta name="description" content="Paste an HTML page and get a static report of keyboard-navigation defects — no browser automation, no network call.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="head">
+      <h1 class="head__title">Keyboard-nav auditor</h1>
+      <p class="head__sub">Paste or drop an HTML file. Checked entirely in this page, with no
+        network call: unreachable interactive controls, a tab order that diverges from markup
+        order, focus rings suppressed with no replacement, and a heuristic for scripts that trap
+        the Tab key.</p>
+    </header>
+
+    <div class="panes">
+      <section class="pane">
+        <div class="pane__head">
+          <h2 class="pane__title">HTML source</h2>
+          <div class="pane__actions">
+            <button type="button" id="sample-btn" class="btn btn--ghost">Load example</button>
+            <button type="button" id="clear-btn" class="btn btn--ghost">Clear</button>
+          </div>
+        </div>
+        <label class="sr-only" for="html-input">HTML source to audit</label>
+        <textarea
+          id="html-input"
+          class="editor"
+          placeholder="Paste HTML here, or drop a .html file onto this box…"
+          spellcheck="false"
+        ></textarea>
+        <p class="hint" id="drop-hint">Drop a .html file anywhere on this pane to load it.</p>
+      </section>
+
+      <section class="pane">
+        <div class="pane__head">
+          <h2 class="pane__title">Report</h2>
+          <span class="pane__status" id="status" aria-live="polite">Paste HTML, or load the example, to begin.</span>
+        </div>
+        <div id="report" class="report" aria-live="polite"></div>
+      </section>
+    </div>
+
+    <footer class="foot">
+      <p>Static analysis only: no script executes, no page renders, no network request is made.
+        Four checks, each documented in the <a href="README.md">README</a>.</p>
+    </footer>
+  </main>
+
+  <script src="src/htmlParse.js"></script>
+  <script src="src/cssParse.js"></script>
+  <script src="src/auditor.js"></script>
+  <script src="src/app.js"></script>
+</body>
+</html>
