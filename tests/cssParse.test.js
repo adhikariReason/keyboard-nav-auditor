@@ -80,6 +80,10 @@ test('unterminated rule does not throw, takes the rest of input as its body', ()
   assert.doesNotThrow(() => parseCss('.a { outline: none;'));
 });
 
+test('unterminated quoted string does not throw, takes the rest of input as the string', () => {
+  assert.doesNotThrow(() => parseCss('.a { content: "unterminated'));
+});
+
 test('empty input parses to no rules', () => {
   assert.deepEqual(parseCss(''), []);
 });
