@@ -90,13 +90,13 @@ exact same code backs the CLI, the library and the UI. Paste or drop an
 
 ## How it was tested
 
-`npm test` (= `node --test`) runs 106 cases across five files:
+`npm test` (= `node --test`) runs 107 cases across five files:
 
 - `tests/htmlParse.test.js` (15) — the tolerant HTML tokenizer: attributes
   (quoted/unquoted/boolean), void elements, self-closing syntax, comments,
   `<script>`/`<style>` raw-text capture, mismatched/unclosed tags, line
   numbers, and size/depth caps.
-- `tests/cssParse.test.js` (19) — selector-list splitting, `!important`
+- `tests/cssParse.test.js` (20) — selector-list splitting, `!important`
   stripping, comment handling (including *inside* a declaration block —
   a real bug this test found before it was fixed), `@media`/`@supports`
   recursion with line numbers preserved, `@keyframes`/`@font-face`/`@import`
@@ -130,7 +130,7 @@ exact same code backs the CLI, the library and the UI. Paste or drop an
     small constants; the same adversarial input now finishes in well under
     a second.
 
-All 106 tests run in about 1 second total, with no network access, no
+All 107 tests run in about 1 second total, with no network access, no
 external binary, and no manual setup.
 
 ## Known gaps
