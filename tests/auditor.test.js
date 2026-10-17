@@ -98,6 +98,26 @@ test('outline set to a real value is never flagged', () => {
   assert.deepEqual(issues, []);
 });
 
+test('outline color set to transparent is flagged — the ring is drawn but invisible', () => {
+  const issues = auditHtml('<style>.btn:focus{outline:2px solid transparent}</style><button class="btn">x</button>').issues;
+  assert.deepEqual(issues.map((i) => i.rule), ['focus-indicator-suppressed']);
+});
+
+test('outline-color alone set to transparent is flagged the same way as the shorthand', () => {
+  const issues = auditHtml('<style>.btn:focus{outline-style:solid;outline-color:transparent}</style><button class="btn">x</button>').issues;
+  assert.deepEqual(issues.map((i) => i.rule), ['focus-indicator-suppressed']);
+});
+
+test('a "compensating" box-shadow that is itself transparent does not count as real compensation', () => {
+  const issues = auditHtml('<style>.btn:focus{outline:none;box-shadow:0 0 0 2px transparent}</style><button class="btn">x</button>').issues;
+  assert.deepEqual(issues.map((i) => i.rule), ['focus-indicator-suppressed']);
+});
+
+test('outline set to currentColor is not flagged — it tracks the text colour, not invisible', () => {
+  const issues = auditHtml('<style>.btn:focus{outline:2px solid currentColor}</style><button class="btn">x</button>').issues;
+  assert.deepEqual(issues, []);
+});
+
 test('a comma-selector list sharing a focus selector inherits the suppression', () => {
   const css = 'a:focus, .deco { outline: 0; }';
   const issues = auditHtml(`<style>${css}</style><a href="#">x</a>`).issues;

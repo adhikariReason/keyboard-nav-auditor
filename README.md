@@ -25,9 +25,11 @@ without running a real browser.
    bare positive `tabindex` is also flagged on its own as a fragility
    warning, even if it doesn't invert anything yet.
 3. **Focus indicator suppressed with no replacement** (WCAG 2.4.7). A
-   `:focus` CSS rule that sets `outline: none`/`0` with no compensating
-   `box-shadow`/`border`/`background`/`filter` in the same rule, and no
-   sibling `:focus-visible` rule providing one.
+   `:focus` CSS rule that sets `outline: none`/`0`/a `transparent` colour
+   (shorthand or `outline-color` alone — both draw a ring nobody can see) with
+   no compensating `box-shadow`/`border`/`background`/`filter` in the same
+   rule, and no sibling `:focus-visible` rule providing one. A "compensating"
+   property that is itself `transparent` doesn't count as a real replacement.
 4. **A possible Tab-key trap** (heuristic). An inline-script keydown/keyup
    handler that checks for the Tab key and calls
    `preventDefault()`/`stopPropagation()` with no `.focus()` call anywhere
@@ -88,7 +90,7 @@ exact same code backs the CLI, the library and the UI. Paste or drop an
 
 ## How it was tested
 
-`npm test` (= `node --test`) runs 99 cases across five files:
+`npm test` (= `node --test`) runs 103 cases across five files:
 
 - `tests/htmlParse.test.js` (15) — the tolerant HTML tokenizer: attributes
   (quoted/unquoted/boolean), void elements, self-closing syntax, comments,
@@ -99,12 +101,14 @@ exact same code backs the CLI, the library and the UI. Paste or drop an
   a real bug this test found before it was fixed), `@media`/`@supports`
   recursion with line numbers preserved, `@keyframes`/`@font-face`/`@import`
   correctly skipped rather than misread as selectors, and malformed input.
-- `tests/auditor.test.js` (26) — all four checks against both the
+- `tests/auditor.test.js` (30) — all four checks against both the
   flag-this and don't-flag-this side of every rule: disabled/inert/
   `aria-hidden` elements, malformed tabindex values, the `:focus-visible`
   escape hatch, `@media`-nested focus rules, external (`src=`) scripts
-  correctly left unscanned, and both the `keyCode === 9` and `9 === which`
-  spellings of the Tab-trap heuristic.
+  correctly left unscanned, both the `keyCode === 9` and `9 === which`
+  spellings of the Tab-trap heuristic, and a `transparent` outline colour or
+  compensating property (shorthand or longhand) correctly treated as
+  invisible rather than as a real focus indicator.
 - `tests/cli.test.js` (11) — the CLI as a real subprocess: exit codes,
   `--json`, a missing file, no arguments, `--help`, a directory given
   instead of a file, and that piping into `head` doesn't crash with EPIPE.
@@ -126,7 +130,7 @@ exact same code backs the CLI, the library and the UI. Paste or drop an
     small constants; the same adversarial input now finishes in well under
     a second.
 
-All 99 tests run in about 1 second total, with no network access, no
+All 103 tests run in about 1 second total, with no network access, no
 external binary, and no manual setup.
 
 ## Known gaps

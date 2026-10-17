@@ -21,17 +21,24 @@ const INTERACTIVE_ROLES = new Set([
 
 const INTERACTIVE_EVENT_ATTRS = ['onclick', 'onmousedown', 'onmouseup', 'onkeydown'];
 
-const OUTLINE_SUPPRESSING = new Set(['outline', 'outline-style', 'outline-width']);
+const OUTLINE_SUPPRESSING = new Set(['outline', 'outline-style', 'outline-width', 'outline-color']);
 const COMPENSATING_PROPS = ['box-shadow', 'border', 'border-color', 'border-width', 'border-style', 'background', 'background-color', 'filter'];
+
+// A value is "invisible" if it's literally transparent — the ring/compensation is
+// drawn but can never be seen, which is indistinguishable from not drawing it at all.
+function isInvisibleValue(v) {
+  return v.trim().toLowerCase().split(/\s+/).includes('transparent');
+}
 
 function isOutlineSuppressed(decl) {
   if (!OUTLINE_SUPPRESSING.has(decl.prop)) return false;
   const v = decl.value.trim();
+  if (isInvisibleValue(v)) return true;
   return v === 'none' || v === '0' || v === '0px' || v.startsWith('none ') || v === '0 none' || /^0(\.0+)?(px|em|rem)?$/.test(v);
 }
 
 function hasCompensation(declarations) {
-  return declarations.some((d) => COMPENSATING_PROPS.includes(d.prop) && d.value.trim() !== 'none' && d.value.trim() !== '0');
+  return declarations.some((d) => COMPENSATING_PROPS.includes(d.prop) && d.value.trim() !== 'none' && d.value.trim() !== '0' && !isInvisibleValue(d.value));
 }
 
 function selectorBase(selector) {
